@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block titulo %}Colaborador{% endblock %}
+
+{% block head %}
+    <style>
+        .form-label{
+            font-size: 15px;
+            font-weight: bold;
+
+        }
+
+        .form-control{
+
+            height: 30px;
+        }
+
+        textarea.form-control {
+            height: 100px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+    <form class="row g-3" method="POST">
+      {% csrf_token %}
+        <div class="col-md-6">
+          <label class="form-label">Nome</label>
+          <input type="text" class="form-control" name="nome">
+        </div>
+        <div class="col-md-6">
+          <label for="inputsobrenome" class="form-label">Sobrenome</label>
+          <input type="text" class="form-control" id="inputsobrenome" name="sobrenome">
+        </div>
+        <div class="col-md-2">
+          <label for="inputcpf" class="form-label">CPF</label>
+          <input type="text" class="form-control" id="inputcpf" name="cpf">
+        </div>
+        <div class="col-md-2">
+          <label for="inputsilga" class="form-label">Sigla</label>
+          <input type="text" class="form-control" id="inputsilga" name="sigla">
+        </div>
+        <div class="col-md-2">
+          <label for="inputdata" class="form-label">Data Nascimento</label>
+          <input type="date" class="form-control" id="inputdata" name="nascimento" placeholder="">
+        </div>
+        <div class="col-md-4">
+          <label for="inputEmail4" class="form-label">E-mail</label>
+          <input type="email" class="form-control" id="inputEmail4" name="email">
+        </div>
+        <div class="col-md-2">
+          <label for="inputfone" class="form-label">Telefone</label>
+          <input type="text" class="form-control" id="inputfone" name="fone">
+        </div>
+        <div class="col-8">
+          <label for="inputcargo" class="form-label">Cargo</label>
+          <input type="text" class="form-control" id="inputcargo" name="cargo">
+        </div>
+        <div class="col-2">
+          <label for="inputadmissao" class="form-label">Data Admissão</label>
+          <input type="date" class="form-control" id="inputadmissao" placeholder="" name="admissao">
+        </div>
+        <div class="col-2">
+          <label for="inputrescisao" class="form-label">Data Rescisão</label>
+          <input type="date" class="form-control" id="inputrescisao" placeholder="" name="rescisao">
+        </div>
+        <div class="col-8">
+          <label for="inputcontato" class="form-label">Contatos Emergência</label>
+            <textarea class="form-control" id="inputcontato" name="contatos"></textarea>
+        </div>
+        <div class="">
+          <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+
+{% block tittle %}Cliente{% endblock %}
+
+{% block head %}
+    <!-- DataTables CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        #my_content{
+            margin-top: 20px;
+            font-family: Segoe UI;
+            font-size: 12px;
+        }
+
+        .form-control{
+            background-color: #F5FFFA;
+
+        }
+
+        input{
+            margin: 0 0 10px 0;
+        }
+
+        input:hover{
+            background-color: #FFFFFF;
+            border-color: blue;
+            box-shadow: 1px 1px;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
+        }
+        textarea:hover{
+            background-color: #FFFFFF;
+            border-color: blue;
+            box-shadow: 1px 1px;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
+        }
+
+        label{
+            margin: 0 0 10px 0;
+        }
+
+        .btn-modal{
+            width: 100%;
+        }
+
+    </style>
+{% endblock %}
+
+{% block subhead %}Clientes{% endblock %}
+
+{% block content %}
+
+    <div id="my_content">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+          Adicionar Registro
+        </button>
+        <!-- Modal Save -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="width:563px;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Novo Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'save_cliente' %}">
+                    {% csrf_token %}
+
+                    <label for="segmentoField" class="form-label">Segmento</label>
+                    <select class="form-control" id="segmentoField" name="segmentoField" placeholder="segmento" required>
+                        <option>Escolha uma opção</option>
+                        {% for field in objUJ %}
+                            <option value="{{ field.id }}">{{ field }}</option>
+                        {% endfor %}
+                    </select>
+
+
+                    <label for="nichoField" class="form-label">Nicho</label>
+                    <select class="form-control" id="nichoField" name="nichoField" placeholder="nicho">
+                        <option>Escolha uma opção</option>
+                        {% for field in objNicho %}
+                            <option value="{{ field.id }}">{{ field }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="codigoField" class="form-label">Codigo</label>
+                    <input class="form-control"  id="codigoField" name="codigoField" placeholder="codigo" type="number" maxlength="4" oninput="limitarCaracteres(this)">
+
+                    <label for="identificadorField" class="form-label">Identificador</label>
+                    <input class="form-control"  id="identificadorField" name="identificadorField" placeholder="identificador" maxlength="9" oninput="limitarCaracteres(this)">
+
+                    <label for="nomeField" class="form-label">Nome</label>
+                    <input class="form-control"  id="nomeField" name="nomeField" placeholder="nome">
+
+                    <label for="municipioField" class="form-label">Município</label>
+                    <input class="form-control"  id="municipioField" name="municipioField" placeholder="municipio">
+
+                    <label for="emailField" class="form-label">Email</label>
+                    <input class="form-control"  id="emailField" name="emailField" placeholder="email">
+
+                    <label for="observacoesField" class="form-label">Observações</label>
+                    <textarea class="form-control"  id="observacoesField" name="observacoesField" placeholder="observaçoes"></textarea>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-modal" onclick="validateForm(event)">Adicionar</button>
+                    </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <!-- Modal Edit -->
+        <div class="modal fade" id="staticBackdropEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="width:563px;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropEditLabel">Editar Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'edit_cliente' %}">
+                    {% csrf_token %}
+
+                    <input type="hidden" class="form-control"  id="idCliente" name="idCliente">
+
+                    <label for="segmentoFieldEdit" class="form-label">Segmento</label>
+                    <select class="form-control" id="segmentoFieldEdit" name="segmentoFieldEdit" placeholder="segmento" required>
+                        <option>Escolha uma opção</option>
+                        {% for field in objUJ %}
+                            <option value="{{ field.id }}" {% if field.id == campo1 %}selected{% endif %}>{{ field }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="nichoFieldEdit" class="form-label">Nicho</label>
+                    <select class="form-control" id="nichoFieldEdit" name="nichoFieldEdit" placeholder="nicho">
+                        <option>Escolha uma opção</option>
+                        {% for field in objNicho %}
+                            <option value="{{ field.id }}" {% if field.id == campo2 %}selected{% endif %}>{{ field }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="codigoFieldEdit" class="form-label">Codigo</label>
+                    <input class="form-control"  id="codigoFieldEdit" name="codigoFieldEdit" placeholder="codigo" type="number" maxlength="4" oninput="limitarCaracteres(this)">
+
+                    <label for="identificadorFieldEdit" class="form-label">Identificador</label>
+                    <input class="form-control"  id="identificadorFieldEdit" name="identificadorFieldEdit" placeholder="identificador" maxlength="9" oninput="limitarCaracteres(this)">
+
+                    <label for="nomeFieldEdit" class="form-label">Nome</label>
+                    <input class="form-control"  id="nomeFieldEdit" name="nomeFieldEdit" placeholder="nome">
+
+                    <label for="municipioFieldEdit" class="form-label">Município</label>
+                    <input class="form-control"  id="municipioFieldEdit" name="municipioFieldEdit" placeholder="municipio">
+
+                    <label for="emailFieldEdit" class="form-label">Email</label>
+                    <input class="form-control"  id="emailFieldEdit" name="emailFieldEdit" placeholder="email">
+
+                    <label for="observacoesFieldEdit" class="form-label">Observações</label>
+                    <textarea class="form-control"  id="observacoesFieldEdit" name="observacoesFieldEdit" placeholder="observaçoes"></textarea>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-modal" onclick="validateFormEdit(event)">Adicionar</button>
+                    </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <!-- Modal Delete -->
+        <div class="modal fade" id="staticBackdropDelete" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="width:563px;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropDeleteLabel">Excluir Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'delete_cliente' %}">
+                    {% csrf_token %}
+
+                    <input type="hidden" class="form-control"  id="idClienteDel" name="idClienteDel">
+
+                    <label for="segmentoFieldDel" class="form-label">Segmento</label>
+                    <select class="form-control" id="segmentoFieldDel" name="segmentoFieldDel" placeholder="segmento" disabled>
+                        <option>Escolha uma opção</option>
+                        {% for field in objUJ %}
+                            <option value="{{ field.id }}" {% if field.id == campo1 %}selected{% endif %}>{{ field }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" id="segmentoFieldDelHidden" name="segmentoFieldDelHidden" readonly>
+
+                    <label for="nichoFieldDel" class="form-label">Nicho</label>
+                    <select class="form-control" id="nichoFieldDel" name="nichoFieldDel" placeholder="nicho" disabled>
+                        <option>Escolha uma opção</option>
+                        {% for field in objNicho %}
+                            <option value="{{ field.id }}" {% if field.id == campo2 %}selected{% endif %}>{{ field }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" id="nichoFieldDelHidden" name="nichoFieldDelHidden" readonly>
+
+                    <label for="codigoFieldDel" class="form-label">Codigo</label>
+                    <input class="form-control"  id="codigoFieldDel" name="codigoFieldDel" placeholder="codigo" type="number" maxlength="4" oninput="limitarCaracteres(this)" readonly>
+
+                    <label for="identificadorFieldDel" class="form-label">Identificador</label>
+                    <input class="form-control"  id="identificadorFieldDel" name="identificadorFieldDel" placeholder="identificador" maxlength="9" oninput="limitarCaracteres(this)" readonly>
+
+                    <label for="nomeFieldDel" class="form-label">Nome</label>
+                    <input class="form-control"  id="nomeFieldDel" name="nomeFieldDel" placeholder="nome" readonly>
+
+                    <label for="municipioFieldDel" class="form-label">Município</label>
+                    <input class="form-control"  id="municipioFieldDel" name="municipioFieldDel" placeholder="municipio" readonly>
+
+                    <label for="emailFieldDel" class="form-label">Email</label>
+                    <input class="form-control"  id="emailFieldDel" name="emailFieldDel" placeholder="email" readonly>
+
+                    <label for="observacoesFieldDel" class="form-label">Observações</label>
+                    <textarea class="form-control"  id="observacoesFieldDel" name="observacoesFieldDel" placeholder="observaçoes" readonly></textarea>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger btn-modal">Excluir</button>
+                    </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <form id="elementosQuery" method="GET" action="{% url 'query_cliente' %}">
+            <input class="form-control" placeholder="Pesquisar" style="" id="query" name="query">
+            <button type="submit" class="btn btn-success" style="" id="queryButton">Pesquisar</button>
+        </form>
+
+        <table id="" class="table table-bordered">
+          <thead>
+            <tr>
+                <th>Segmento</th>
+                <th>Nicho</th>
+                <th>Código</th>
+                <th>Identificador</th>
+                <th>Nome</th>
+                <th>Município-UF</th>
+                <th>E-mail</th>
+                <th></th>
+                <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cliente in objCliente %}
+                <tr>
+                    <td>{{ cliente.segmento }}</td>
+                    <td>{{ cliente.nicho }}</td>
+                    <td>{{ cliente.codigo }}</td>
+                    <td>{{ cliente.identificador }}</td>
+                    <td>{{ cliente.nome }}</td>
+                    <td>{{ cliente.municipio_uf }}</td>
+                    <td>{{ cliente.email }}</td>
+                    <td><a href="#" class="editar-link" data-idcliente="{{ cliente.id }}" data-field1="{{ cliente.segmento.id }}" data-field2="{{ cliente.nicho.id }}" data-field3="{{ cliente.codigo }}" data-field4="{{ cliente.identificador }}" data-field5="{{ cliente.nome }}" data-field6="{{ cliente.municipio_uf }}" data-field7="{{ cliente.email }}" data-field8="{{ cliente.observacoes }}" style="color:blue;"><span class="material-symbols-outlined">edit</span></a></td>
+                    <td><a href="#" class="deletar-link" data-idclientedel="{{ cliente.id }}" data-field1del="{{ cliente.segmento.id }}" data-field2del="{{ cliente.nicho.id }}" data-field3del="{{ cliente.codigo }}" data-field4del="{{ cliente.identificador }}" data-field5del="{{ cliente.nome }}" data-field6del="{{ cliente.municipio_uf }}" data-field7del="{{ cliente.email }}" data-field8del="{{ cliente.observacoes }}" style="color:red;"><span class="material-symbols-outlined">delete</span></a></td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#tbClientes').DataTable();
+        });
+    </script>
+
+    <!-- Format/Field -->
+    <script>
+        function limitarCaracteres(input) {
+          if (input.value.length > input.maxLength) {
+            input.value = input.value.slice(0, input.maxLength);
+          }
+        }
+    </script>
+
+    <!-- Tratamento para o formulário modal em branco -->
+    <script>
+      function validateForm(event) {
+        // Impede o envio do formulário por padrão
+        event.preventDefault();
+
+        // Verifica se os campos obrigatórios estão preenchidos
+        var segmento = document.getElementById('segmentoField').value;
+        var nicho = document.getElementById('nichoField').value;
+        var codigo = document.getElementById('codigoField').value;
+        var identificador = document.getElementById('identificadorField').value;
+        var nome = document.getElementById('nomeField').value;
+        var municipio = document.getElementById('municipioField').value;
+        var email = document.getElementById('emailField').value;
+
+        if (segmento === '' || nicho === '' || codigo === '' || identificador === '' || nome === '' || municipio === '' || email === '') {
+          alert('Por favor, preencha todos os campos obrigatórios.');
+        } else {
+          // Todos os campos obrigatórios estão preenchidos, envie o formulário
+          event.target.form.submit();
+        }
+      }
+    </script>
+    <script>
+          function validateFormEdit(event) {
+            // Impede o envio do formulário por padrão
+            event.preventDefault();
+
+            // Verifica se os campos obrigatórios estão preenchidos
+            var segmento = document.getElementById('segmentoFieldEdit').value;
+            var nicho = document.getElementById('nichoFieldEdit').value;
+            var codigo = document.getElementById('codigoFieldEdit').value;
+            var identificador = document.getElementById('identificadorFieldEdit').value;
+            var nome = document.getElementById('nomeFieldEdit').value;
+            var municipio = document.getElementById('municipioFieldEdit').value;
+            var email = document.getElementById('emailFieldEdit').value;
+
+            if (segmento === '' || nicho === '' || codigo === '' || identificador === '' || nome === '' || municipio === '' || email === '') {
+              alert('Por favor, preencha todos os campos obrigatórios.');
+            } else {
+              // Todos os campos obrigatórios estão preenchidos, envie o formulário
+              event.target.form.submit();
+            }
+          }
+        </script>
+
+    <!-- Modal Edit -->
+    <script>
+        $(document).ready(function() {
+          // Abrir o modal ao clicar no link "Editar"
+          $(".editar-link").click(function(e) {
+            e.preventDefault();
+
+            // Obter os dados da linha selecionada
+            var idCliente = $(this).data("idcliente");
+            var campo1 = $(this).data("field1");
+            var campo2 = $(this).data("field2");
+            var campo3 = $(this).data("field3");
+            var campo4 = $(this).data("field4");
+            var campo5 = $(this).data("field5");
+            var campo6 = $(this).data("field6");
+            var campo7 = $(this).data("field7");
+            var campo8 = $(this).data("field8");
+
+            // Preencher os campos do formulário do modal com os dados
+            $("#idCliente").val(idCliente);
+            $("#segmentoFieldEdit").val(campo1);
+            $("#nichoFieldEdit").val(campo2);
+            $("#codigoFieldEdit").val(campo3);
+            $("#identificadorFieldEdit").val(campo4);
+            $("#nomeFieldEdit").val(campo5);
+            $("#municipioFieldEdit").val(campo6);
+            $("#emailFieldEdit").val(campo7);
+            $("#observacoesFieldEdit").val(campo8);
+
+             // Abrir o modal de edição
+            $("#staticBackdropEdit").modal("show");
+            });
+        });
+
+    </script>
+
+    <!-- Modal Delete -->
+    <script>
+        $(document).ready(function() {
+          // Abrir o modal ao clicar no link "Editar"
+          $(".deletar-link").click(function(e) {
+            e.preventDefault();
+
+            // Obter os dados da linha selecionada
+            var idCliente = $(this).data("idclientedel");
+            var campo1 = $(this).data("field1del");
+            var campo2 = $(this).data("field2del");
+            var campo3 = $(this).data("field3del");
+            var campo4 = $(this).data("field4del");
+            var campo5 = $(this).data("field5del");
+            var campo6 = $(this).data("field6del");
+            var campo7 = $(this).data("field7del");
+            var campo8 = $(this).data("field8del");
+
+            // Preencher os campos do formulário do modal com os dados
+            $("#idClienteDel").val(idCliente);
+            $("#segmentoFieldDel").val(campo1);
+            $("#segmentoFieldDelHidden").val(campo1);
+            $("#nichoFieldDel").val(campo2);
+            $("#nichoFieldDelHidden").val(campo2);
+            $("#codigoFieldDel").val(campo3);
+            $("#identificadorFieldDel").val(campo4);
+            $("#nomeFieldDel").val(campo5);
+            $("#municipioFieldDel").val(campo6);
+            $("#emailFieldDel").val(campo7);
+            $("#observacoesFieldDel").val(campo8);
+
+             // Abrir o modal de edição
+            $("#staticBackdropDelete").modal("show");});
+        });
+
+    </script>
+
+{% endblock %}

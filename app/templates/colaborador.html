@@ -1,0 +1,543 @@
+{% extends 'base.html' %}
+
+{% block tittle %}Colaborador{% endblock %}
+
+{% block head %}
+    <!-- DataTables CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        #my_content{
+            margin-top: 20px;
+            font-family: Segoe UI;
+            font-size: 12px;
+        }
+
+        .form-control{
+            background-color: #F5FFFA;
+
+        }
+
+        input{
+            margin: 0 0 10px 0;
+        }
+
+        input:hover{
+            background-color: #FFFFFF;
+            border-color: blue;
+            box-shadow: 1px 1px;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
+        }
+        textarea:hover{
+            background-color: #FFFFFF;
+            border-color: blue;
+            box-shadow: 1px 1px;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
+        }
+
+        label{
+            margin: 0 0 10px 0;
+        }
+
+        .btn-modal{
+            width: 100%;
+        }
+
+    </style>
+{% endblock %}
+
+{% block subhead %}Colaboradores{% endblock %}
+
+{% block content %}
+
+    <div id="my_content">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+          Adicionar Registro
+        </button>
+        <!-- Modal Save -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="width:563px;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Novo Colaborador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'save_colaborador' %}">
+                    {% csrf_token %}
+
+                    <label for="completoField" class="form-label">Nome Completo</label>
+                    <input class="form-control"  id="completoField" name="completoField" placeholder="nome completo" type="text">
+
+                    <label for="nomeField" class="form-label">Nome</label>
+                    <input class="form-control"  id="nomeField" name="nomeField" placeholder="nome" type="text">
+
+                    <label for="sobrenomeField" class="form-label">Sobrenome</label>
+                    <input class="form-control"  id="sobrenomeField" name="sobrenomeField" placeholder="nome" type="text">
+
+                    <label for="siglaField" class="form-label">Sigla</label>
+                    <input class="form-control"  id="siglaField" name="siglaField" placeholder="sigla" type="text" maxlength="3" oninput="limitarCaracteres(this)">
+
+                    <label for="cpfField" class="form-label">CPF</label>
+                    <input class="form-control"  id="cpfField" name="cpfField" placeholder="cpf" type="text" maxlength="14" oninput="limitarCaracteres(this)">
+
+                    <label for="nascimentoField" class="form-label">Data Nascimento</label>
+                    <input class="form-control"  id="nascimentoField" name="nascimentoField" placeholder="nascimento" type="date">
+
+                    <label for="institucionalField" class="form-label">Email Institucional</label>
+                    <input class="form-control"  id="institucionalField" name="institucionalField" placeholder="email institucional" type="email">
+
+                    <label for="emailField" class="form-label">Email Pessoal</label>
+                    <input class="form-control"  id="emailField" name="emailField" placeholder="email pessoal" type="email">
+
+                    <label for="telefoneField" class="form-label">Telefone</label>
+                    <input class="form-control"  id="telefoneField" name="telefoneField" placeholder="telefone" type="text">
+
+                    <label for="cargoField" class="form-label">Cargo</label>
+                    <input class="form-control"  id="cargoField" name="cargoField" placeholder="cargo" type="text">
+
+                    <label for="admissaoField" class="form-label">Data Admissão</label>
+                    <input class="form-control"  id="admissaoField" name="admissaoField" placeholder="admissão" type="date">
+
+                    <label for="rescisaoField" class="form-label">Data Rescisão</label>
+                    <input class="form-control"  id="rescisaoField" name="rescisaoField" placeholder="rescisão" type="date">
+
+                    <label for="contatosField" class="form-label">Contatos de Emergência</label>
+                    <textarea class="form-control"  id="contatosField" name="contatosField" placeholder="contatos"></textarea>
+
+<!--                    <label for="fotoField" class="form-label">Fotografia</label>-->
+<!--                    <input class="form-control"  id="fotoField" name="fotoField" placeholder="fotografia" type="image">-->
+
+<!--                    <label for="urlfotoField" class="form-label">Url Fotografia</label>-->
+<!--                    <input class="form-control"  id="urlfotoField" name="urlfotoField" placeholder="url fotografia" type="url">-->
+
+<!--                    <label for="statusField" class="form-label">Status Colaborador</label>-->
+<!--                    <input value="ATIVO" class="form-control"  id="statusField" name="statusField" placeholder="statusField" type="text" readonly>-->
+<!--                    <select class="form-control"  id="statusField" name="statusField" placeholder="status" disabled>-->
+<!--                        <option value="ATIVO">ATIVO</option>-->
+<!--                        <option value="INATIVO">INATIVO</option>-->
+<!--                    </select>-->
+
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-modal" onclick="validateForm(event)">Adicionar</button>
+                    </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <!-- Modal Edit -->
+        <div class="modal fade" id="staticBackdropEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="width:563px;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropEditLabel">Editar Colaborador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'edit_colaborador' %}">
+                    {% csrf_token %}
+
+                    <input type="hidden" class="form-control"  id="idcolaborador" name="idcolaborador">
+
+                    <label for="completoFieldEdt" class="form-label">Nome Completo</label>
+                    <input class="form-control"  id="completoFieldEdt" name="completoFieldEdt" placeholder="nome completo" type="text">
+
+                    <label for="nomeFieldEdit" class="form-label">Nome</label>
+                    <input class="form-control"  id="nomeFieldEdit" name="nomeFieldEdit" placeholder="nome" type="text">
+
+                    <label for="sobrenomeFieldEdit" class="form-label">Sobrenome</label>
+                    <input class="form-control"  id="sobrenomeFieldEdit" name="sobrenomeFieldEdit" placeholder="nome" type="text">
+
+                    <label for="siglaFieldEdit" class="form-label">Sigla</label>
+                    <input class="form-control"  id="siglaFieldEdit" name="siglaFieldEdit" placeholder="sigla" type="text" maxlength="3" oninput="limitarCaracteres(this)">
+
+                    <label for="cpfFieldEdit" class="form-label">CPF</label>
+                    <input class="form-control"  id="cpfFieldEdit" name="cpfFieldEdit" placeholder="cpf" type="text" maxlength="14" oninput="limitarCaracteres(this)">
+
+                    <label for="nascimentoFieldEdit" class="form-label">Data Nascimento</label>
+                    <input class="form-control"  id="nascimentoFieldEdit" name="nascimentoFieldEdit" placeholder="nascimento" type="date">
+
+                    <label for="institucionalFieldEdit" class="form-label">Email Institucional</label>
+                    <input class="form-control"  id="institucionalFieldEdit" name="institucionalFieldEdit" placeholder="email institucional" type="email">
+
+                    <label for="emailFieldEdit" class="form-label">Email Pessoal</label>
+                    <input class="form-control"  id="emailFieldEdit" name="emailFieldEdit" placeholder="email pessoal" type="email">
+
+                    <label for="telefoneFieldEdit" class="form-label">Telefone</label>
+                    <input class="form-control"  id="telefoneFieldEdit" name="telefoneFieldEdit" placeholder="telefone" type="text">
+
+                    <label for="cargoFieldEdit" class="form-label">Cargo</label>
+                    <input class="form-control"  id="cargoFieldEdit" name="cargoFieldEdit" placeholder="cargo" type="text">
+
+                    <label for="admissaoFieldEdit" class="form-label">Data Admissão</label>
+                    <input class="form-control"  id="admissaoFieldEdit" name="admissaoFieldEdit" placeholder="admissão" type="date">
+
+                    <label for="rescisaoFieldEdit" class="form-label">Data Rescisão</label>
+                    <input class="form-control"  id="rescisaoFieldEdit" name="rescisaoFieldEdit" placeholder="rescisão" type="date">
+
+                    <label for="contatosFieldEdit" class="form-label">Contatos de Emergência</label>
+                    <textarea class="form-control"  id="contatosFieldEdit" name="contatosFieldEdit" placeholder="contatos"></textarea>
+
+<!--                    <label for="fotoFieldEdit" class="form-label">Fotografia</label>-->
+<!--                    <input class="form-control"  id="fotoFieldEdit" name="fotoFieldEdit" placeholder="fotografia" type="image">-->
+
+<!--                    <label for="urlfotoFieldEdit" class="form-label">Url Fotografia</label>-->
+<!--                    <input class="form-control"  id="urlfotoFieldEdit" name="urlfotoFieldEdit" placeholder="url fotografia" type="url">-->
+
+                    <label for="statusFieldEdit" class="form-label">Status Colaborador</label>
+                    <input class="form-control"  id="statusFieldEdit" name="statusFieldEdit" placeholder="statusFieldEdit" type="text" readonly>
+<!--                    <select class="form-control"  id="statusFieldEdit" name="statusFieldEdit" placeholder="status">-->
+<!--                        <option value="ATIVO">ATIVO</option>-->
+<!--                        <option value="INATIVO">INATIVO</option>-->
+<!--                    </select>-->
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-modal" onclick="validateFormEdit(event)">Adicionar</button>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Modal Delete -->
+        <div class="modal fade" id="staticBackdropDelete" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="width:563px;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropDeleteLabel">Excluir Colaborador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'delete_colaborador' %}">
+                    {% csrf_token %}
+
+                    <input type="hidden" class="form-control"  id="idcolaboradorDel" name="idcolaboradorDel">
+
+                     <label for="completoFieldDel" class="form-label">Nome Completo</label>
+                    <input class="form-control"  id="completoFieldDel" name="completoFieldDel" placeholder="nome completo" type="text" readonly>
+
+                    <label for="nomeFieldDel" class="form-label">Nome</label>
+                    <input class="form-control"  id="nomeFieldDel" name="nomeFieldDel" placeholder="nome" type="text" readonly>
+
+                    <label for="sobrenomeFieldDel" class="form-label">Sobrenome</label>
+                    <input class="form-control"  id="sobrenomeFieldDel" name="sobrenomeFieldDel" placeholder="nome" type="text" readonly>
+
+                    <label for="siglaFieldDel" class="form-label">Sigla</label>
+                    <input class="form-control"  id="siglaFieldDel" name="siglaFieldDel" placeholder="sigla" type="text" maxlength="3" oninput="limitarCaracteres(this)" readonly>
+
+                    <label for="cpfFieldDel" class="form-label">CPF</label>
+                    <input class="form-control"  id="cpfFieldDel" name="cpfFieldDel" placeholder="cpf" type="text" maxlength="14" oninput="limitarCaracteres(this)" readonly>
+
+                    <label for="nascimentoFieldDel" class="form-label">Data Nascimento</label>
+                    <input class="form-control"  id="nascimentoFieldDel" name="nascimentoFieldDel" placeholder="nascimento" type="date" readonly>
+
+                    <label for="institucionalFieldDel" class="form-label">Email Institucional</label>
+                    <input class="form-control"  id="institucionalFieldDel" name="institucionalFieldDel" placeholder="email institucional" type="email" readonly>
+
+                    <label for="emailFieldDel" class="form-label">Email Pessoal</label>
+                    <input class="form-control"  id="emailFieldDel" name="emailFieldDel" placeholder="email pessoal" type="email" readonly>
+
+                    <label for="telefoneFieldDel" class="form-label">Telefone</label>
+                    <input class="form-control"  id="telefoneFieldDel" name="telefoneFieldDel" placeholder="telefone" type="text" readonly>
+
+                    <label for="cargoFieldDel" class="form-label">Cargo</label>
+                    <input class="form-control"  id="cargoFieldDel" name="cargoFieldDel" placeholder="cargo" type="text" readonly>
+
+                    <label for="admissaoFieldDel" class="form-label">Data Admissão</label>
+                    <input class="form-control"  id="admissaoFieldDel" name="admissaoFieldDel" placeholder="admissão" type="date" readonly>
+
+                    <label for="rescisaoFieldDel" class="form-label">Data Rescisão</label>
+                    <input class="form-control"  id="rescisaoFieldDel" name="rescisaoFieldDel" placeholder="rescisão" type="time" readonly>
+
+                    <label for="contatosFieldDel" class="form-label">Contatos de Emergência</label>
+                    <textarea class="form-control"  id="contatosFieldDel" name="contatosFieldDel" placeholder="contatos" readonly></textarea>
+
+<!--                    <label for="fotoFieldDel" class="form-label">Fotografia</label>-->
+<!--                    <input class="form-control"  id="fotoFieldDel" name="fotoFieldDel" placeholder="fotografia" type="image" readonly>-->
+
+<!--                    <label for="urlfotoFieldDel" class="form-label">Url Fotografia</label>-->
+<!--                    <input class="form-control"  id="urlfotoFieldDel" name="urlfotoFieldDel" placeholder="url fotografia" type="url" readonly>-->
+
+                    <label for="statusFieldDel" class="form-label">Status Colaborador</label>
+                    <input class="form-control" type="text" id="statusFieldDel" name="statusFieldDel" readonly>
+<!--                    <select class="form-control"  id="statusFieldDel" name="statusFieldDel" placeholder="status" disabled>-->
+<!--                        <option value="ATIVO">ATIVO</option>-->
+<!--                        <option value="INATIVO">INATIVO</option>-->
+<!--                    </select>-->
+<!--                     <input type="hidden" id="statusFieldDelHidden" name="statusFieldDelHidden" readonly>-->
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger btn-modal">Excluir</button>
+                    </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <form id="elementosQuery" method="GET" action="{% url 'query_colaborador' %}">
+            <input class="form-control" placeholder="Pesquisar" id="query" name="query">
+            <button type="submit" class="btn btn-success" id="queryButton">Pesquisar</button>
+        </form>
+
+        <table id="" class="table table-bordered">
+          <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Sobrenome</th>
+                <th>Sigla</th>
+                <th>CPF</th>
+                <th>Email</th>
+                <th>Cargo</th>
+                <th>Fone</th>
+                <th>Admissão</th>
+                <th>Status</th>
+                <th></th>
+                <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for colaborador in objColaborador %}
+                <tr>
+                    <td>{{ colaborador.nome }}</td>
+                    <td>{{ colaborador.sobrenome }}</td>
+                    <td>{{ colaborador.sigla }}</td>
+                    <td>{{ colaborador.cpf }}</td>
+                     <td>{{ colaborador.email_institucional }}</td>
+                    <td>{{ colaborador.cargo }}</td>
+                    <td>{{ colaborador.telefone }}</td>
+                    <td>{{ colaborador.data_admissao|date:'d/m/Y' }}</td>
+                    <td>{{ colaborador.status }}</td>
+                    <td><a href="#" class="editar-link" data-idcolaborador="{{ colaborador.id }}" data-field1="{{ colaborador.nome_completo }}" data-field2="{{ colaborador.nome }}" data-field3="{{ colaborador.sobrenome }}" data-field4="{{ colaborador.sigla }}" data-field5="{{ colaborador.cpf }}" data-field6="{{ colaborador.data_nascimento }}" data-field7="{{ colaborador.email_institucional }}" data-field8="{{ colaborador.email_pessoal }}" data-field9="{{ colaborador.telefone }}" data-field10="{{ colaborador.cargo }}" data-field11="{{ colaborador.data_admissao }}" data-field12="{{ colaborador.data_rescisao }}" data-field13="{{ colaborador.contatos_emergencia }}" data-field14="{{ colaborador.status }}" style="color:blue;"><span class="material-symbols-outlined">edit</span></a></td>
+                    <td><a href="#" class="deletar-link" data-idcolaboradordel="{{ colaborador.id }}" data-field1del="{{ colaborador.nome_completo }}" data-field2del="{{ colaborador.nome }}" data-field3del="{{ colaborador.sobrenome }}" data-field4del="{{ colaborador.sigla }}" data-field5del="{{ colaborador.cpf }}" data-field6del="{{ colaborador.data_nascimento }}" data-field7del="{{ colaborador.email_institucional }}" data-field8del="{{ colaborador.email_pessoal }}" data-field9del="{{ colaborador.telefone }}" data-field10del="{{ colaborador.cargo }}" data-field11del="{{ colaborador.data_admissao }}" data-field12del="{{ colaborador.data_rescisao }}" data-field13del="{{ colaborador.contatos_emergencia }}" data-field14del="{{ colaborador.status }}" style="color:red;"><span class="material-symbols-outlined">delete</span></a></td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#tbcolaboradors').DataTable();
+        });
+    </script>
+
+    <!-- Format/Field -->
+    <script>
+        function limitarCaracteres(input) {
+          if (input.value.length > input.maxLength) {
+            input.value = input.value.slice(0, input.maxLength);
+          }
+        }
+    </script>
+
+    <!-- Tratamento para o formulário modal em branco -->
+    <script>
+      function validateForm(event) {
+        // Impede o envio do formulário por padrão
+        event.preventDefault();
+
+        // Verifica se os campos obrigatórios estão preenchidos
+        var nome_completo = document.getElementById('completoField').value;
+        var nome = document.getElementById('nomeField').value;
+        var sobrenome = document.getElementById('sobrenomeField').value;
+        var sigla = document.getElementById('siglaField').value;
+        var cpf = document.getElementById('cpfField').value;
+        var nascimento = document.getElementById('nascimentoField').value;
+        var institucional = document.getElementById('institucionalField').value;
+        var emailpessoal = document.getElementById('emailField').value;
+        var telefone = document.getElementById('telefoneField').value;
+        var cargo = document.getElementById('cargoField').value;
+        var admissao = document.getElementById('admissaoField').value;
+        //var status = document.getElementById('statusField').value;
+
+        if (nome_completo === '' || nome === '' || sobrenome === '' || sigla === '' || cpf === '' || nascimento === '' || institucional === '' || emailpessoal === '' || telefone === '' || cargo === '' || admissao === '') {
+          alert('Por favor, preencha todos os campos obrigatórios.');
+        } else {
+          // Todos os campos obrigatórios estão preenchidos, envie o formulário
+          event.target.form.submit();
+        }
+      }
+    </script>
+    <script>
+          function validateFormEdit(event) {
+            // Impede o envio do formulário por padrão
+            event.preventDefault();
+
+            // Verifica se os campos obrigatórios estão preenchidos
+            var completo = document.getElementById('completoFieldEdt').value;
+            var nome = document.getElementById('nomeFieldEdit').value;
+            var sobrenome = document.getElementById('sobrenomeFieldEdit').value;
+            var sigla = document.getElementById('siglaFieldEdit').value;
+            var cpf = document.getElementById('cpfFieldEdit').value;
+            var nascimento = document.getElementById('nascimentoFieldEdit').value;
+            var institucional = document.getElementById('institucionalFieldEdit').value;
+            var pessoal = document.getElementById('emailFieldEdit').value;
+            var telefone = document.getElementById('telefoneFieldEdit').value;
+            var cargo = document.getElementById('cargoFieldEdit').value;
+            var admissao = document.getElementById('admissaoFieldEdit').value;
+            //var rescisao = document.getElementById('rescisaoFieldEdit').value;
+            //var contatos = document.getElementById('contatosFieldEdit').value;
+            //var status = document.getElementById('statusFieldEdit').value;
+
+            if (completo === '' || nome === '' || sobrenome === '' || sigla === '' || cpf === '' || nascimento === '' || institucional === '' || pessoal === '' || telefone === '' || cargo === '' || admissao === '') {
+              alert('Por favor, preencha todos os campos obrigatórios.');
+            } else {
+              // Todos os campos obrigatórios estão preenchidos, envie o formulário
+              event.target.form.submit();
+            }
+          }
+        </script>
+
+    <!-- Modal Edit - Carregar os Dados -->
+    <script>
+
+        // Função para converter a data para o formato YYYY-MM-DD
+        function formatDate(dateString) {
+            //console.log("1. " + dateString);
+            var partes = dateString.split(" de ")
+            //var dia = partes[0];
+            var dia = partes[0].padStart(2, "0");
+            var mes = partes[1];
+            var ano = partes[2];
+            var meses = {"Janeiro": "01", "Feveriro": "02", "Março": "03", "Abril": "04", "Maio": "05", "Junho": "05", "Julho": "06", "Agosto": "08", "Setembro": "09", "Outubro": "10", "Novembro": "11", "Dezembro": "12"};
+            var dataFormata = ano + "-" + meses[mes] + "-" + dia
+            return dataFormata;
+        }
+
+        $(document).ready(function() {
+          // Abrir o modal ao clicar no link "Editar"
+          $(".editar-link").click(function(e) {
+            e.preventDefault();
+
+            // Obter os dados da linha selecionada
+            var idcolaborador = $(this).data("idcolaborador");
+            var campo1 = $(this).data("field1");
+            var campo2 = $(this).data("field2");
+            var campo3 = $(this).data("field3");
+            var campo4 = $(this).data("field4");
+            var campo5 = $(this).data("field5");
+            var campo6 = $(this).data("field6");
+            var campo7 = $(this).data("field7");
+            var campo8 = $(this).data("field8");
+            var campo9 = $(this).data("field9");
+            var campo10 = $(this).data("field10");
+            var campo11 = $(this).data("field11");
+            var campo12 = $(this).data("field12");
+            var campo13 = $(this).data("field13");
+            var campo14 = $(this).data("field14");
+
+            // Preencher os campos do formulário do modal com os dados
+            $("#idcolaborador").val(idcolaborador);
+            $("#completoFieldEdt").val(campo1);
+            $("#nomeFieldEdit").val(campo2);
+            $("#sobrenomeFieldEdit").val(campo3);
+            $("#siglaFieldEdit").val(campo4);
+            $("#cpfFieldEdit").val(campo5);
+
+            // Converter a data para o formato "YYYY-MM-DD"
+            var dataFormatada = formatDate(campo6);
+            $("#nascimentoFieldEdit").val(dataFormatada);
+
+            $("#institucionalFieldEdit").val(campo7);
+            $("#emailFieldEdit").val(campo8);
+            $("#telefoneFieldEdit").val(campo9);
+            $("#cargoFieldEdit").val(campo10);
+
+            // Converter a data para o formato "YYYY-MM-DD"
+            var dataFormatada2 = formatDate(campo11);
+            $("#admissaoFieldEdit").val(dataFormatada2);
+
+            // Converter a data para o formato "YYYY-MM-DD"
+            var dataFormatada3 = formatDate(campo12);
+            $("#rescisaoFieldEdit").val(dataFormatada3);
+            $("#contatosFieldEdit").val(campo13);
+            $("#statusFieldEdit").val(campo14);
+
+             // Abrir o modal de edição
+            $("#staticBackdropEdit").modal("show");
+            });
+        });
+
+    </script>
+
+    <!-- Modal Delete -->
+    <script>
+
+        // Função para converter a data para o formato YYYY-MM-DD
+        function formatDate(dateString) {
+            //console.log("1. " + dateString);
+            var partes = dateString.split(" de ")
+            //var dia = partes[0];
+            var dia = partes[0].padStart(2, "0");
+            var mes = partes[1];
+            var ano = partes[2];
+            var meses = {"Janeiro": "01", "Feveriro": "02", "Março": "03", "Abril": "04", "Maio": "05", "Junho": "05", "Julho": "06", "Agosto": "08", "Setembro": "09", "Outubro": "10", "Novembro": "11", "Dezembro": "12"};
+            var dataFormata = ano + "-" + meses[mes] + "-" + dia
+            return dataFormata;
+        }
+
+        $(document).ready(function() {
+          // Abrir o modal ao clicar no link "Editar"
+          $(".deletar-link").click(function(e) {
+            e.preventDefault();
+
+            // Obter os dados da linha selecionada
+            var idcolaboradorDel = $(this).data("idcolaboradordel");
+            var campo1 = $(this).data("field1del");
+            var campo2 = $(this).data("field2del");
+            var campo3 = $(this).data("field3del");
+            var campo4 = $(this).data("field4del");
+            var campo5 = $(this).data("field5del");
+            var campo6 = $(this).data("field6del");
+            var campo7 = $(this).data("field7del");
+            var campo8 = $(this).data("field8del");
+            var campo9 = $(this).data("field9del");
+            var campo10 = $(this).data("field10del");
+            var campo11 = $(this).data("field11del");
+            var campo12 = $(this).data("field12del");
+            var campo13 = $(this).data("field13del");
+            var campo14 = $(this).data("field14del");
+
+            // Preencher os campos do formulário do modal com os dados
+            $("#idcolaboradorDel").val(idcolaboradorDel);
+            $("#completoFieldDel").val(campo1);
+            $("#nomeFieldDel").val(campo2);
+            $("#sobrenomeFieldDel").val(campo3);
+            $("#siglaFieldDel").val(campo4);
+            $("#cpfFieldDel").val(campo5);
+            // Converter a data para o formato "YYYY-MM-DD"
+            var dataFormatada1 = formatDate(campo6);
+            $("#nascimentoFieldDel").val(dataFormatada1);
+            $("#institucionalFieldDel").val(campo7);
+            $("#emailFieldDel").val(campo8);
+            $("#telefoneFieldDel").val(campo9);
+            $("#cargoFieldDel").val(campo10);
+            // Converter a data para o formato "YYYY-MM-DD"
+            var dataFormatada2 = formatDate(campo11);
+            $("#admissaoFieldDel").val(dataFormatada2);
+            // Converter a data para o formato "YYYY-MM-DD"
+            var dataFormatada3 = formatDate(campo12);
+            $("#rescisaoFieldDel").val(dataFormatada3);
+            $("#contatosFieldDel").val(campo13);
+            $("#statusFieldDel").val(campo14);
+            //$("#statusFieldDelHidden").val(campo14);
+
+             // Abrir o modal de edição
+            $("#staticBackdropDelete").modal("show");});
+        });
+
+    </script>
+
+{% endblock %}

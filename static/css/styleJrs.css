@@ -1,0 +1,38 @@
+/*body{
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+}*/
+
+/* Definiçções para ajustar a tabela da página Home */
+#tbProcessos_wrapper{
+    margin-top: 20px;
+}
+
+#relTbProcessos_wrapper{
+    margin-top: 20px;
+}
+#relTbClientes_wrapper{
+    margin-top: 20px;
+}
+#relTbColaboradores_wrapper{
+    margin-top: 20px;
+}
+
+
+.my_area{
+    margin: 20px 20px 20px 20px;
+}
+
+#elementosQuery{
+    display: flex;
+    flex-direction: row;
+    /*background-color: red;*/
+}
+#query{
+    width: 20%;
+}
+
+#queryButton{
+    margin-left: 1px;
+    height: 90%;;
+}

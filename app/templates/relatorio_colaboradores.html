@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Relatório{% endblock %}
+
+{% block subhead %}Relatório de Colaboradores{% endblock %}
+
+{% block content %}
+
+    <table class="display nowrap" id="relTbColaboradores" style="font-family: 'Roboto', sans-serif; font-size: 12px; width:100%">
+          <thead class="table-light" style="font-weight: bold; color: #495057">
+            <tr>
+                <th>NOME</th>
+                <th>SOBRENOME</th>
+                <th>SIGLA</th>
+                <th>CPF</th>
+                <th>EMAIL</th>
+                <th>CARGO</th>
+                <th>FONE</th>
+                <th>ADMISSAO</th>
+                <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for colaborador in objColaborador %}
+                <tr>
+                    <td>{{ colaborador.nome }}</td>
+                    <td>{{ colaborador.sobrenome }}</td>
+                    <td>{{ colaborador.sigla }}</td>
+                    <td>{{ colaborador.cpf }}</td>
+                     <td>{{ colaborador.email_institucional }}</td>
+                    <td>{{ colaborador.cargo }}</td>
+                    <td>{{ colaborador.telefone }}</td>
+                    <td>{{ colaborador.data_admissao|date:'d/m/Y' }}</td>
+                    <td>{{ colaborador.status }}</td>
+                </tr>
+             {% endfor %}
+          </tbody>
+
+    </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#relTbColaboradores').DataTable( {
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            } );
+        });
+    </script>
+
+{% endblock %}

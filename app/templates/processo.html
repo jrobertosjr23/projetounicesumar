@@ -1,0 +1,562 @@
+{% extends 'base.html' %}
+
+{% block tittle %}Processos{% endblock %}
+
+{% block head %}
+    <!-- DataTables CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        #my_content{
+            margin-top: 20px;
+            font-family: Segoe UI;
+            font-size: 12px;
+        }
+
+        .form-control{
+            background-color: #F5FFFA;
+
+        }
+
+        input{
+            margin: 0 0 10px 0;
+        }
+
+        input:hover{
+            background-color: #FFFFFF;
+            border-color: blue;
+            box-shadow: 1px 1px;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
+        }
+        textarea:hover{
+            background-color: #FFFFFF;
+            border-color: blue;
+            box-shadow: 1px 1px;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
+        }
+
+        label{
+            margin: 0 0 10px 0;
+        }
+
+        .btn-modal{
+            width: 100%;
+        }
+
+    </style>
+{% endblock %}
+
+{% block subhead %}Processos{% endblock %}
+
+{% block content %}
+
+    <div id="my_content">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+          Adicionar Registro
+        </button>
+        <!-- Modal Save -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="width:563px;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Novo Processo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'save_processo' %}">
+                    {% csrf_token %}
+
+                    <label for="responsavelField" class="form-label">Responsável Cadastrado</label>
+                    <select class="form-control"  id="responsavelField" name="responsavelField">
+                        <option value="">---</option>
+                        {% for field in objColaborador %}
+                            <option value="{{ field.id }}">{{ field.nome_completo }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="dataField" class="form-label">Data Cadastrado</label>
+                    <input class="form-control"  id="dataField" name="dataField" placeholder="data cadastrado" type="date">
+
+                    <label for="idProcessoField" class="form-label">ID Processo</label>
+                    <input class="form-control"  id="idProcessoField" name="idProcessoField" placeholder="id processo" type="number" maxlength="4" oninput="limitarCaracteres(this)">
+
+                    <label for="atuacaoField" class="form-label">Tipo Atuação</label>
+                    <select class="form-control"  id="atuacaoField" name="atuacaoField">
+                        <option value="">---</option>
+                        <option value="PERÍCIA LIQUIDAÇÃO">PERÍCIA LIQUIDAÇÃO</option>
+                        <option value="PERÍCIA INSTRUÇÃO">PERÍCIA INSTRUÇÃO</option>
+                        <option value="PERÍCIA CONHECIMENTO">PERÍCIA CONHECIMENTO</option>
+                        <option value="PERÍCIA CÍVEL">PERÍCIA CÍVEL</option>
+                        <option value="ASSISTÊNCIA TÉCNICA PARTE 1">ASSISTÊNCIA TÉCNICA PARTE 1</option>
+                        <option value="ASSISTÊNCIA TÉCNICA PARTE 2">ASSISTÊNCIA TÉCNICA PARTE 2</option>
+                        <option value="ASSISTÊNCIA CONTRATO TRABALHO">ASSISTÊNCIA CONTRATO TRABALHO</option>
+                        <option value="TERCEIRIZAÇÃO">TERCEIRIZAÇÃO</option>
+                        <option value="ADMINISTRAÇÃO JUDICIAL">ADMINISTRAÇÃO JUDICIAL</option>
+                        <option value="MUTIRÃO TRT6">MUTIRÃO TRT6</option>
+                        <option value="EXECUÇÃO DE TÍTULO JUDICIAL">EXECUÇÃO DE TÍTULO JUDICIAL</option>
+                    </select>
+
+                    <label for="clienteField" class="form-label">Cliente</label>
+                    <select class="form-control"  id="clienteField" name="clienteField">
+                        <option value="">---</option>
+                        {% for field in objCliente %}
+                            <option value="{{ field.id }}">{{ field.identificador }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="numeroProcessoField" class="form-label">Número Processo</label>
+                    <input class="form-control"  id="numeroProcessoField" name="numeroProcessoField" placeholder="número do processo" type="text">
+
+                    <label for="acaoField" class="form-label">Tipo Ação</label>
+                    <select class="form-control"  id="acaoField" name="acaoField">
+                        <option value="">---</option>
+                        <option value="RECLAMAÇÃO TRABALHISTA">RECLAMAÇÃO TRABALHISTA</option>
+                        <option value="EXECUÇÃO PROVISÓRIA">EXECUÇÃO PROVISÓRIA</option>
+                        <option value="CONSIGNAÇÃO EM PAGAMENTO">CONSIGNAÇÃO EM PAGAMENTO</option>
+                        <option value="AÇÃO DE CUMPRIMENTO">AÇÃO DE CUMPRIMENTO</option>
+                        <option value="CUMPRIMENTO DE SENTENÇA">CUMPRIMENTO DE SENTENÇA</option>
+                        <option value="PROCEDIMENTO COMUM CÍVEL">PROCEDIMENTO COMUM CÍVEL</option>
+                        <option value="AÇÃO MONITÓRIA">AÇÃO MONITÓRIA</option>
+                        <option value="AÇÃO CIVIL COLETIVA">AÇÃO CIVIL COLETIVA</option>
+                        <option value="AÇÃO CIVIL PÚBLICA">AÇÃO CIVIL PÚBLICA</option>
+                    </select>
+
+                    <label for="tipoProcessoField" class="form-label">Tipo Processo</label>
+                    <select class="form-control"  id="tipoProcessoField" name="tipoProcessoField">
+                        <option value="">---</option>
+                        <option value="PJe">PJe</option>
+                        <option value="PJe-n">PJe-n</option>
+                        <option value="CSV">CSV</option>
+                        <option value="CSV-n">CSV-n</option>
+                        <option value="CSV-AF">CSV-AF</option>
+                        <option value="Físico">Físico</option>
+
+                    </select>
+
+                    <label for="parte1Field" class="form-label">Parte 1</label>
+                    <textarea class="form-control"  id="parte1Field" name="parte1Field" placeholder="parte 1"></textarea>
+
+                    <label for="parte2Field" class="form-label">Parte 2</label>
+                    <textarea class="form-control"  id="parte2Field" name="parte2Field" placeholder="parte 2"></textarea>
+
+                    <label for="associadosField" class="form-label">Processos Associados</label>
+                    <input class="form-control"  id="associadosField" name="associadosField" placeholder="processos associados" type="number">
+
+                    <label for="comentariosField" class="form-label">Comentários</label>
+                    <textarea class="form-control"  id="comentariosField" name="comentariosField" placeholder="comentários"></textarea>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-modal" onclick="validateForm(event)">Adicionar</button>
+                    </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <!-- Modal Edit -->
+        <div class="modal fade" id="staticBackdropEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="width:563px;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropEditLabel">Editar Processo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'edit_processo' %}">
+                    {% csrf_token %}
+
+                    <input type="hidden" class="form-control"  id="idprocesso" name="idprocesso">
+
+                    <label for="responsavelFieldEdit" class="form-label">Responsável Cadastrado</label>
+                    <select class="form-control"  id="responsavelFieldEdit" name="responsavelFieldEdit">
+                        <option value="">---</option>
+                        {% for field in objColaborador %}
+                            <option value="{{ field.id }}">{{ field.nome_completo }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="dataFieldEdit" class="form-label">Data Cadastrado</label>
+                    <input class="form-control"  id="dataFieldEdit" name="dataFieldEdit" placeholder="data cadastrado" type="date">
+
+                    <label for="idProcessoFieldEdit" class="form-label">ID Processo</label>
+                    <input class="form-control"  id="idProcessoFieldEdit" name="idProcessoFieldEdit" placeholder="id processo" type="number" maxlength="4" oninput="limitarCaracteres(this)">
+
+                    <label for="atuacaoFieldEdit" class="form-label">Tipo Atuação</label>
+                    <select class="form-control"  id="atuacaoFieldEdit" name="atuacaoFieldEdit">
+                        <option value="">---</option>
+                        <option value="PERÍCIA LIQUIDAÇÃO">PERÍCIA LIQUIDAÇÃO</option>
+                        <option value="PERÍCIA INSTRUÇÃO">PERÍCIA INSTRUÇÃO</option>
+                        <option value="PERÍCIA CONHECIMENTO">PERÍCIA CONHECIMENTO</option>
+                        <option value="PERÍCIA CÍVEL">PERÍCIA CÍVEL</option>
+                        <option value="ASSISTÊNCIA TÉCNICA PARTE 1">ASSISTÊNCIA TÉCNICA PARTE 1</option>
+                        <option value="ASSISTÊNCIA TÉCNICA PARTE 2">ASSISTÊNCIA TÉCNICA PARTE 2</option>
+                        <option value="ASSISTÊNCIA CONTRATO TRABALHO">ASSISTÊNCIA CONTRATO TRABALHO</option>
+                        <option value="TERCEIRIZAÇÃO">TERCEIRIZAÇÃO</option>
+                        <option value="ADMINISTRAÇÃO JUDICIAL">ADMINISTRAÇÃO JUDICIAL</option>
+                        <option value="MUTIRÃO TRT6">MUTIRÃO TRT6</option>
+                        <option value="EXECUÇÃO DE TÍTULO JUDICIAL">EXECUÇÃO DE TÍTULO JUDICIAL</option>
+                    </select>
+
+                    <label for="clienteFieldEdit" class="form-label">Cliente</label>
+                    <select class="form-control"  id="clienteFieldEdit" name="clienteFieldEdit">
+                        <option value="">---</option>
+                        {% for field in objCliente %}
+                            <option value="{{ field.id }}">{{ field.identificador }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="numeroProcessoFieldEdit" class="form-label">Número Processo</label>
+                    <input class="form-control"  id="numeroProcessoFieldEdit" name="numeroProcessoFieldEdit" placeholder="número do processo" type="text">
+
+                    <label for="acaoFieldEdit" class="form-label">Tipo Ação</label>
+                    <select class="form-control"  id="acaoFieldEdit" name="acaoFieldEdit">
+                        <option value="">---</option>
+                        <option value="RECLAMAÇÃO TRABALHISTA">RECLAMAÇÃO TRABALHISTA</option>
+                        <option value="EXECUÇÃO PROVISÓRIA">EXECUÇÃO PROVISÓRIA</option>
+                        <option value="CONSIGNAÇÃO EM PAGAMENTO">CONSIGNAÇÃO EM PAGAMENTO</option>
+                        <option value="AÇÃO DE CUMPRIMENTO">AÇÃO DE CUMPRIMENTO</option>
+                        <option value="CUMPRIMENTO DE SENTENÇA">CUMPRIMENTO DE SENTENÇA</option>
+                        <option value="PROCEDIMENTO COMUM CÍVEL">PROCEDIMENTO COMUM CÍVEL</option>
+                        <option value="AÇÃO MONITÓRIA">AÇÃO MONITÓRIA</option>
+                        <option value="AÇÃO CIVIL COLETIVA">AÇÃO CIVIL COLETIVA</option>
+                        <option value="AÇÃO CIVIL PÚBLICA">AÇÃO CIVIL PÚBLICA</option>
+                    </select>
+
+                    <label for="tipoProcessoFieldEdit" class="form-label">Tipo Processo</label>
+                    <select class="form-control"  id="tipoProcessoFieldEdit" name="tipoProcessoFieldEdit">
+                        <option value="">---</option>
+                        <option value="PJe">PJe</option>
+                        <option value="PJe-n">PJe-n</option>
+                        <option value="CSV">CSV</option>
+                        <option value="CSV-n">CSV-n</option>
+                        <option value="CSV-AF">CSV-AF</option>
+                        <option value="Físico">Físico</option>
+                    </select>
+
+                    <label for="parte1FieldEdit" class="form-label">Parte 1</label>
+                    <textarea class="form-control"  id="parte1FieldEdit" name="parte1FieldEdit" placeholder="parte 1"></textarea>
+
+                    <label for="parte2FieldEdit" class="form-label">Parte 2</label>
+                    <textarea class="form-control"  id="parte2FieldEdit" name="parte2FieldEdit" placeholder="parte 2"></textarea>
+
+                    <label for="associadosFieldEdit" class="form-label">Processos Associados</label>
+                    <input class="form-control"  id="associadosFieldEdit" name="associadosFieldEdit" placeholder="processos associados" type="number">
+
+                    <label for="comentariosFieldEdit" class="form-label">Comentários</label>
+                    <textarea class="form-control"  id="comentariosFieldEdit" name="comentariosFieldEdit" placeholder="comentários"></textarea>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-modal" onclick="validateFormEdit(event)">Adicionar</button>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Modal Delete -->
+        <div class="modal fade" id="staticBackdropDelete" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="width:563px;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropDeleteLabel">Excluir Processo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="{% url 'delete_processo' %}">
+                    {% csrf_token %}
+
+                    <input type="hidden" class="form-control"  id="idprocessoDel" name="idprocessoDel">
+
+                    <label for="responsavelFieldDel" class="form-label">Responsável Cadastrado</label>
+                    <input class="form-control"  id="responsavelFieldDel" name="responsavelFieldDel" placeholder="responsável cadastro" type="text" readonly>
+
+                    <label for="dataFieldDel" class="form-label">Data Cadastrado</label>
+                    <input class="form-control"  id="dataFieldDel" name="dataFieldDel" placeholder="data cadastrado" type="date" readonly>
+
+                    <label for="idProcessoFieldDel" class="form-label">ID Processo</label>
+                    <input class="form-control"  id="idProcessoFieldDel" name="idProcessoFieldDel" placeholder="id processo" type="number" maxlength="4" oninput="limitarCaracteres(this)" readonly>
+
+                    <label for="atuacaoFieldDel" class="form-label">Tipo Atuação</label>
+                    <input class="form-control"  id="atuacaoFieldDel" name="atuacaoFieldDel" placeholder="tipo atuação" type="text" readonly>
+
+                    <label for="clienteFieldDel" class="form-label">Cliente</label>
+                    <input class="form-control"  id="clienteFieldDel" name="clienteFieldDel" placeholder="cliente" type="text" readonly>
+
+                    <label for="numeroProcessoFieldDel" class="form-label">Número Processo</label>
+                    <input class="form-control"  id="numeroProcessoFieldDel" name="numeroProcessoFieldDel" placeholder="número do processo" type="text" readonly>
+
+                    <label for="acaoFieldDel" class="form-label">Tipo Ação</label>
+                    <input class="form-control"  id="acaoFieldDel" name="acaoFieldDel" placeholder="tipo ação" type="text" readonly>
+
+                    <label for="tipoProcessoFieldDel" class="form-label">Tipo Processo</label>
+                    <input class="form-control"  id="tipoProcessoFieldDel" name="tipoProcessoFieldDel" placeholder="tipo processo" type="text" readonly>
+
+                    <label for="parte1FieldDel" class="form-label">Parte 1</label>
+                    <textarea class="form-control"  id="parte1FieldDel" name="parte1FieldDel" placeholder="parte 1" readonly></textarea>
+
+                    <label for="parte2FieldDel" class="form-label">Parte 2</label>
+                    <textarea class="form-control"  id="parte2FieldDel" name="parte2FieldDel" placeholder="parte 2" readonly></textarea>
+
+                    <label for="associadosFieldDel" class="form-label">Processos Associados</label>
+                    <input class="form-control"  id="associadosFieldDel" name="associadosFieldDel" placeholder="processos associados" type="number" readonly>
+
+                    <label for="comentariosFieldDel" class="form-label">Comentários</label>
+                    <textarea class="form-control"  id="comentariosFieldDel" name="comentariosFieldDel" placeholder="comentários" readonly></textarea>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger btn-modal">Excluir</button>
+                    </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <form id="elementosQuery" method="GET" action="{% url 'query' %}">
+            <input class="form-control" placeholder="Pesquisar" id="query" name="query">
+            <button type="submit" class="btn btn-success" id="queryButton">Pesquisar</button>
+        </form>
+
+        <table id="" class="table table-bordered">
+          <thead>
+            <tr>
+                <th>Responsável Cadastro</th>
+                <th>Data Cadastro</th>
+                <th>ID Processo</th>
+                <th>Tipo Processo</th>
+                <th>ID Cliente</th>
+                <th>Número Processo</th>
+                <th>Tipo Ação</th>
+                <th>Tipo Processo</th>
+                <th>Parte 1</th>
+                <th>Parte 2</th>
+                <th>Processos Associados</th>
+                <th>Comentários</th>
+                <th></th>
+                <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for processo in objProcesso %}
+                <tr>
+                    <td>{{ processo.responsavel_cadastrado }}</td>
+                    <td>{{ processo.data_cadastrado }}</td>
+                    <td>{{ processo.id_processo }}</td>
+                    <td>{{ processo.tipo_atuacao }}</td>
+                     <td>{{ processo.cliente }}</td>
+                    <td>{{ processo.numero_processo }}</td>
+                    <td>{{ processo.tipo_acao }}</td>
+                    <td>{{ processo.tipo_processo }}</td>
+                    <td>{{ processo.parte_1 }}</td>
+                    <td>{{ processo.parte_2 }}</td>
+                    <td>{{ processo.processos_associados }}</td>
+                    <td>{{ processo.comentarios }}</td>
+                    <td><a href="#" class="editar-link" data-idprocesso="{{ processo.id }}" data-field1="{{ processo.responsavel_cadastrado.id }}" data-field2="{{ processo.data_cadastrado }}" data-field3="{{ processo.id_processo }}" data-field4="{{ processo.tipo_atuacao }}" data-field5="{{ processo.cliente.id }}" data-field6="{{ processo.numero_processo }}" data-field7="{{ processo.tipo_acao }}" data-field8="{{ processo.tipo_processo }}" data-field9="{{ processo.parte_1 }}" data-field10="{{ processo.parte_2 }}" data-field11="{{ processo.processos_associados }}" data-field12="{{ processo.comentarios }}" style="color:blue;"><span class="material-symbols-outlined">edit</span></a></td>
+                    <td><a href="#" class="deletar-link" data-idprocessodel="{{ processo.id }}" data-field1del="{{ processo.responsavel_cadastrado }}" data-field2del="{{ processo.data_cadastrado }}" data-field3del="{{ processo.id_processo }}" data-field4del="{{ processo.tipo_atuacao }}" data-field5del="{{ processo.cliente }}" data-field6del="{{ processo.numero_processo }}" data-field7del="{{ processo.tipo_acao }}" data-field8del="{{ processo.tipo_processo }}" data-field9del="{{ processo.parte_1 }}" data-field10del="{{ processo.parte_2 }}" data-field11del="{{ processo.processos_associados }}" data-field12del="{{ processo.comentarios }}" style="color:red;"><span class="material-symbols-outlined">delete</span></a></td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#tbprocessos').DataTable();
+        });
+    </script>
+
+
+    <!-- Format/Field -->
+    <script>
+        function limitarCaracteres(input) {
+          if (input.value.length > input.maxLength) {
+            input.value = input.value.slice(0, input.maxLength);
+          }
+        }
+    </script>
+
+    <!-- Tratamento para o formulário modal em branco [ADICIONAR][EDITAR] -->
+    <script>
+      function validateForm(event) {
+        // Impede o envio do formulário por padrão
+        event.preventDefault();
+
+        // Verifica se os campos obrigatórios estão preenchidos
+        var responsavel_cadastrado = document.getElementById('responsavelField').value;
+        var data_cadastrado = document.getElementById('dataField').value;
+        var id_processo = document.getElementById('idProcessoField').value;
+        var tipo_atuacao = document.getElementById('atuacaoField').value;
+        var cliente = document.getElementById('clienteField').value;
+        var numero_processo = document.getElementById('numeroProcessoField').value;
+        var tipo_acao = document.getElementById('acaoField').value;
+        var tipo_processo = document.getElementById('tipoProcessoField').value;
+        var parte_1 = document.getElementById('parte1Field').value;
+        var parte_2 = document.getElementById('parte2Field').value;
+        var processos_associados = document.getElementById('associadosField').value;
+
+        if (responsavel_cadastrado === '' || data_cadastrado === '' || id_processo === '' || tipo_atuacao === '' || cliente === '' || numero_processo === '' || tipo_acao === '' || tipo_processo === '' || parte_1 === '' || parte_2 === '' || processos_associados === '') {
+          alert('Por favor, preencha todos os campos obrigatórios.');
+        } else {
+          // Todos os campos obrigatórios estão preenchidos, envie o formulário
+          event.target.form.submit();
+        }
+      }
+    </script>
+    <script>
+          function validateFormEdit(event) {
+            // Impede o envio do formulário por padrão
+            event.preventDefault();
+
+            // Verifica se os campos obrigatórios estão preenchidos
+            var responsavel_cadastrado = document.getElementById('responsavelFieldEdit').value;
+            var data_cadastrado = document.getElementById('dataFieldEdit').value;
+            var id_processo = document.getElementById('idProcessoFieldEdit').value;
+            var tipo_atuacao = document.getElementById('atuacaoFieldEdit').value;
+            var cliente = document.getElementById('clienteFieldEdit').value;
+            var numero_processo = document.getElementById('numeroProcessoFieldEdit').value;
+            var tipo_acao = document.getElementById('acaoFieldEdit').value;
+            var tipo_processo = document.getElementById('tipoProcessoFieldEdit').value;
+            var parte_1 = document.getElementById('parte1FieldEdit').value;
+            var parte_2 = document.getElementById('parte2FieldEdit').value;
+            var processos_associados = document.getElementById('associadosFieldEdit').value;
+
+            if (responsavel_cadastrado === '' || data_cadastrado === '' || id_processo === '' || tipo_atuacao === '' || cliente === '' || numero_processo === '' || tipo_acao === '' || tipo_processo === '' || parte_1 === '' || parte_2 === '' || processos_associados === '') {
+              alert('Por favor, preencha todos os campos obrigatórios.');
+            } else {
+              // Todos os campos obrigatórios estão preenchidos, envie o formulário
+              event.target.form.submit();
+            }
+          }
+        </script>
+
+    <!-- Modal Edit - Carregar os Dados -->
+    <script>
+
+        // Função para converter a data para o formato YYYY-MM-DD
+        function formatDate(dateString) {
+            //console.log("1. " + dateString);
+            var partes = dateString.split(" de ")
+            //var dia = partes[0];
+            var dia = partes[0].padStart(2, "0");
+            var mes = partes[1];
+            var ano = partes[2];
+            var meses = {"Janeiro": "01", "Feveriro": "02", "Março": "03", "Abril": "04", "Maio": "05", "Junho": "05", "Julho": "06", "Agosto": "08", "Setembro": "09", "Outubro": "10", "Novembro": "11", "Dezembro": "12"};
+            var dataFormata = ano + "-" + meses[mes] + "-" + dia
+            return dataFormata;
+        }
+
+        $(document).ready(function() {
+          // Abrir o modal ao clicar no link "Editar"
+          $(".editar-link").click(function(e) {
+            e.preventDefault();
+
+            // Obter os dados da linha selecionada
+            var idprocesso = $(this).data("idprocesso");
+            var campo1 = $(this).data("field1");
+            var campo2 = $(this).data("field2");
+            var campo3 = $(this).data("field3");
+            var campo4 = $(this).data("field4");
+            var campo5 = $(this).data("field5");
+            var campo6 = $(this).data("field6");
+            var campo7 = $(this).data("field7");
+            var campo8 = $(this).data("field8");
+            var campo9 = $(this).data("field9");
+            var campo10 = $(this).data("field10");
+            var campo11 = $(this).data("field11");
+            var campo12 = $(this).data("field12");
+
+            // Preencher os campos do formulário do modal com os dados
+            $("#idprocesso").val(idprocesso);
+            $("#responsavelFieldEdit").val(campo1);
+
+            // Converter a data para o formato "YYYY-MM-DD"
+            var dataFormatada = formatDate(campo2);
+            $("#dataFieldEdit").val(dataFormatada);
+            $("#idProcessoFieldEdit").val(campo3);
+            $("#atuacaoFieldEdit").val(campo4);
+            $("#clienteFieldEdit").val(campo5);
+            $("#numeroProcessoFieldEdit").val(campo6);
+            $("#acaoFieldEdit").val(campo7);
+            $("#tipoProcessoFieldEdit").val(campo8);
+            $("#parte1FieldEdit").val(campo9);
+            $("#parte2FieldEdit").val(campo10);
+            $("#associadosFieldEdit").val(campo11);
+            $("#comentariosFieldEdit").val(campo12);
+
+             // Abrir o modal de edição
+            $("#staticBackdropEdit").modal("show");
+            });
+        });
+
+    </script>
+
+    <!-- Modal Delete -->
+    <script>
+
+        // Função para converter a data para o formato YYYY-MM-DD
+        function formatDate(dateString) {
+            //console.log("1. " + dateString);
+            var partes = dateString.split(" de ")
+            //var dia = partes[0];
+            var dia = partes[0].padStart(2, "0");
+            var mes = partes[1];
+            var ano = partes[2];
+            var meses = {"Janeiro": "01", "Feveriro": "02", "Março": "03", "Abril": "04", "Maio": "05", "Junho": "05", "Julho": "06", "Agosto": "08", "Setembro": "09", "Outubro": "10", "Novembro": "11", "Dezembro": "12"};
+            var dataFormata = ano + "-" + meses[mes] + "-" + dia
+            return dataFormata;
+        }
+
+        $(document).ready(function() {
+          // Abrir o modal ao clicar no link "Editar"
+          $(".deletar-link").click(function(e) {
+            e.preventDefault();
+
+            // Obter os dados da linha selecionada
+            var idprocessoDel = $(this).data("idprocessodel");
+            var campo1 = $(this).data("field1del");
+            var campo2 = $(this).data("field2del");
+            var campo3 = $(this).data("field3del");
+            var campo4 = $(this).data("field4del");
+            var campo5 = $(this).data("field5del");
+            var campo6 = $(this).data("field6del");
+            var campo7 = $(this).data("field7del");
+            var campo8 = $(this).data("field8del");
+            var campo9 = $(this).data("field9del");
+            var campo10 = $(this).data("field10del");
+            var campo11 = $(this).data("field11del");
+            var campo12 = $(this).data("field12del");
+
+            // Preencher os campos do formulário do modal com os dados
+            $("#idprocessoDel").val(idprocessoDel);
+            $("#responsavelFieldDel").val(campo1);
+
+            // Converter a data para o formato "YYYY-MM-DD"
+            var dataFormatada1 = formatDate(campo2);
+            $("#dataFieldDel").val(dataFormatada1);
+            $("#idProcessoFieldDel").val(campo3);
+            $("#atuacaoFieldDel").val(campo4);
+            $("#clienteFieldDel").val(campo5);
+            $("#numeroProcessoFieldDel").val(campo6);
+            $("#acaoFieldDel").val(campo7);
+            $("#tipoProcessoFieldDel").val(campo8);
+            $("#parte1FieldDel").val(campo9);
+            $("#parte2FieldDel").val(campo10);
+            $("#associadosFieldDel").val(campo11);
+            $("#comentariosFieldDel").val(campo12);
+
+             // Abrir o modal de edição
+            $("#staticBackdropDelete").modal("show");});
+        });
+
+    </script>
+
+{% endblock %}

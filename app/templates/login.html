@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Login</title>
+
+    <link rel="stylesheet" href="{% static '/css/bootstrap.min.css' %}">
+    <!-- Bootstrap CSS -->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    	<!-- FAVICON -->
+    <link rel="icon" href="{% static '/img/favicon-jrs.ico' %}">
+    <link rel="stylesheet" href="{% static '/css/styles.min.css' %}">
+</head>
+<!--<body class="text-center" style="height: 187PX;color: var(&#45;&#45;danger); background-image: url('{% static '/bootstudio/img/plano-fundo.png' %}');">-->
+<body class="text-center" style="height: 187PX;color: var(--danger); background: linear-gradient(90deg, rgba(6, 97, 107, 1) 0%, rgba(10, 185, 204, 1) 100%);">
+<!-- Start: Login Animate -->
+<div class="login-card" style="font-family: Roboto, sans-serif;">
+    <p class="profile-name-card" style="padding: 0px;box-shadow: 0px 0px;" title="">
+        <img class="img-fluid" src="{% static '/img/logomarca.png' %}" width="163" height="66">
+    </p>
+    <form class="form-signin" method="post">{% csrf_token %}
+        <span class="reauth-email" style="margin:11px;"> </span>
+        <input class="form-control form-control-sm" type="text" name="userName" id="userName" required="" placeholder="usuário" autofocus="" style="font-size: 12px;">
+        <input class="form-control form-control-sm" type="password" name="password" id="pwd" required="" placeholder="senha" style="font-size: 12PX;">
+        <button class="btn btn-primary btn-block btn-lg btn-signin" style="background-color: #297B9F; font-family: Roboto, sans-serif;font-size: 10;font-weight: normal;font-style: normal;" type="submit">Acessar</button>
+    </form>
+    <p class="text-center" style="color: rgb(73,80,87);font-size: 12px;">Área restrita</p>
+    <p class="text-center" style="color: rgb(73,80,87);font-size: 12px;">{{ msg }}</p>
+</div><!-- End: Login Animate -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{% static 'js/script.min.js' %}"></script>
+</body>
+</html>

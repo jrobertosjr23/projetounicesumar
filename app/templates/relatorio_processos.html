@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Relatório{% endblock %}
+
+{% block subhead %}Relatório de Processos{% endblock %}
+
+{% block content %}
+
+    <table class="display nowrap" id="relTbProcessos" style="font-family: 'Roboto', sans-serif; font-size: 12px; width:100%">
+          <thead class="table-light" style="font-weight: bold; color: #495057">
+            <tr>
+                <th scope="col">RESPONSÁVEL</th>
+                <th scope="col">CADASTRO</th>
+                <th scope="col">ID</th>
+                <th scope="col">ATUAÇÃO</th>
+                <th scope="col">CLIENTE</th>
+                <th scope="col">N° PROCESSO</th>
+                <th scope="col">AÇÃO</th>
+                <th scope="col">TIPO</th>
+                <th scope="col">PARTE 1</th>
+                <th scope="col">PARTE 2</th>
+                <th scope="col">ASSOCIADOS</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for processo in objProcesso %}
+                    <tr>
+                        <td>{{ processo.responsavel_cadastrado }}</td>
+                        <td>{{ processo.data_cadastrado|date:'d/m/Y' }}</td>
+                        <td>{{ processo.id_processo }}</td>
+                        <td>{{ processo.tipo_atuacao }}</td>
+                        <td>{{ processo.cliente }}</td>
+                        <td>{{ processo.numero_processo }}</td>
+                        <td>{{ processo.tipo_acao }}</td>
+                        <td>{{ processo.tipo_processo }}</td>
+                        <td>{{ processo.parte_1 }}</td>
+                        <td>{{ processo.parte_2 }}</td>
+                        <td>{{ processo.processos_associados }}</td>
+                    </tr>
+             {% endfor %}
+          </tbody>
+
+    </table>
+
+    <script>
+                $(document).ready(function() {
+                    $('#relTbProcessos').DataTable( {
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copy', 'csv', 'excel', 'pdf', 'print'
+                        ]
+                    } );
+                });
+            </script>
+
+{% endblock %}

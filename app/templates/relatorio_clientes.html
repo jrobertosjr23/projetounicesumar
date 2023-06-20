@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Relatório{% endblock %}
+
+{% block subhead %}Relatório de Clientes{% endblock %}
+
+{% block content %}
+
+    <table class="display nowrap" id="relTbClientes" style="font-family: 'Roboto', sans-serif; font-size: 12px; width:100%">
+          <thead class="table-light" style="font-weight: bold; color: #495057">
+            <tr>
+                <th>SEGMENTO</th>
+                <th>NICHO</th>
+                <th>CÓDIGO</th>
+                <th>IDENTIFICADOR</th>
+                <th>NOME</th>
+                <th>MUNICÍPIO</th>
+                <th>EMAIL</th>
+                <th>OBSERVAÇÕES</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for cliente in objCliente %}
+                <tr>
+                    <td>{{ cliente.segmento }}</td>
+                    <td>{{ cliente.nicho }}</td>
+                    <td>{{ cliente.codigo }}</td>
+                    <td>{{ cliente.identificador }}</td>
+                    <td>{{ cliente.nome }}</td>
+                    <td>{{ cliente.municipio_uf }}</td>
+                    <td>{{ cliente.email }}</td>
+                    <td>{{ cliente.observacoes }}</td>
+                </tr>
+             {% endfor %}
+          </tbody>
+
+    </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#relTbClientes').DataTable( {
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            } );
+        });
+    </script>
+
+{% endblock %}
